@@ -26,7 +26,6 @@ class Game {
             }
         }
 
-
         void parse_saved_results(std::string saved_results) {
             std::istringstream linestream(saved_results);
             
@@ -61,26 +60,46 @@ class Game {
         }
 
         std::size_t get_id() {
-            return this->id
+            return this->id;
         }
 
         bool is_valid() {
             return this->valid;
+        }
+
+        std::map<std::string, int> maximum_number_of_cubes() {
+            std::map<std::string, int> map{{"red", 0}, {"blue", 0}, {"green", 0}};
+            
+            for (const auto& result: this->results) {
+                for (const auto& [key, value] : result) {
+                    if (map[key] < value) map[key] = value;
+                }
+            }
+            return map;
         }
 };
 
 int main(int argc, char **argv) {
     std::string game_buffer;
     int flag = 0;
+    long flag2 = 0;
 
     while (getline(std::cin, game_buffer) && game_buffer.size() > 0) {
         Game game = Game(game_buffer);
         if (game.is_valid()) {
-            flag += game.id;
+            flag += game.get_id();
         }
+
+        long pset = 0;
+        for ( const auto& [key, value] : game.maximum_number_of_cubes()) {
+            if (value > 0 && pset == 0) pset=1;
+            pset *= value;
+        }
+        flag2 += pset;
     }
 
     std::cout << "Flag: " << flag << std::endl;
+    std::cout << "Flag2: " << flag2 << std::endl;
 
     return 0;
 }
